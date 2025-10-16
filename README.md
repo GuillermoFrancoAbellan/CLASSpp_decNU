@@ -1,25 +1,16 @@
 CLASS++ Implementation of decaying neutrinos to dark radiation and lighter neutrinos
 ==============================================
 
-Authors: Guillermo Franco Abell\'an and Nicola Terzaghi.
+Authors: Guillermo Franco Abellán and Nicola Terzaghi.
 
-This is a code based on CLASS++ (a version of CLASS written in C++) to compute the effects of neutrinos decaying 
-non-relativistically into dark radiation and lighter neutrinos, in a manner consistent with the experimentally measured mass splittings.
+This code allows to compute the effects of neutrinos decaying non-relativistically into dark radiation and lighter neutrinos in a manner 
+consistent with the experimentally measured mass splittings, as detailed in the preprint 2510.XXXXX. It is based on a modification of 
+CLASS++, a version of CLASS (Julien Lesgourgues, Thomas Tram) written in C++ that was developed by Emil Brinch Holm and Thomas Tram to model the effects of warm dark matter 
+(WDM) decaying non-relativistically into DR.
 
+Any questions or comments may be directed to g.francoabellan@gmail.com or nicola.terzaghi@gmail.com.
 
-------- THE REST IS THE CLASS README OF THE ORIGINAL VERSION -------
-
-CLASS++ Implementation of decaying warm dark matter
-==============================================
-
-Authors: Emil Brinch Holm and Thomas Tram
-
-This branch contains the numerical implementation of an NCDM species decaying non-relativistically to dark radiation, detailed in the preprint 2205.13628.
-
-For instructions on how to run the code, see the explanatory.ini file for the input structure.
-
-Any questions or comments may be directed to ebholm@phys.au.dk, or alternatively as issues on this repository.
-
+------- THE REST IS THE ORIGINAL CLASS README -------
 
 CLASS: Cosmic Linear Anisotropy Solving System 
 ==============================================

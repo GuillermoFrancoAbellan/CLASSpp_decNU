@@ -22,7 +22,7 @@ massless and massive neutrinos, respectively. The second file allows to compute 
 `LCDMnu_dec_toNCDM.ini`, i.e. those with the same neutrino mass spectrum but in the absence of decays.
 
 The folder `CNB_calculations` contains Jupyter notebooks and auxiliary files that allow to reproduce the plots in the preprint 2510.XXXXX. In 
-addition, the notebook `plot_PSD_evolution.ipynb' allows to generate a gif showing the evolution for the phase-space distribution of the 
+addition, the notebook `plot_PSD_evolution.ipynb` allows to generate a gif showing the evolution for the phase-space distribution of the 
 parent and daughter neutrinos. Finally, the file `LCDMnu_negative.ini` contains information on how to specify negative neutrino masses (only 
 relevant for stable neutrinos if one wants to quantify the tension between cosmological and oscillation data).
 

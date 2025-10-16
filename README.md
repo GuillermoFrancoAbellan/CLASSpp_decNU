@@ -3,10 +3,27 @@ CLASS++ Implementation of decaying neutrinos to dark radiation and lighter neutr
 
 Authors: Guillermo Franco Abellán and Nicola Terzaghi.
 
-This code allows to compute the effects of neutrinos decaying non-relativistically into dark radiation and lighter neutrinos in a manner 
-consistent with the experimentally measured mass splittings, as detailed in the preprint 2510.XXXXX. It is based on a modification of 
-CLASS++, a version of CLASS (Julien Lesgourgues, Thomas Tram) written in C++ that was developed by Emil Brinch Holm and Thomas Tram to model the effects of warm dark matter 
-(WDM) decaying non-relativistically into DR.
+This code allows to compute the effects of neutrinos decaying non-relativistically into dark radiation (DR) and lighter neutrinos in a manner 
+consistent with the mass splittings from oscillation data, as detailed in the preprint 2510.XXXXX. It is based on a modification of 
+CLASS++, a version of CLASS (Julien Lesgourgues, Thomas Tram) written in C++ that was developed by Emil Brinch Holm and Thomas Tram in 
+2205.13628 to model the effects of warm dark matter (WDM) decaying non-relativistically into DR.
+
+For information on how to run the code, see the input files:
+
+- `LCDMnu_dec_toNCDM.ini`. This file contains information of the relevant parameters for various scenarios of neutrino decays into DR and 
+lighter neutrinos. These scenarios (labeled A1-A3, B1-B2) are classified according to the decay mass gap (solar or atmospheric), the mass ordering 
+(normal or inverted), and the number of decay channels (single-decay channel or two-decay channel with the degenerate $\nu_{1,2}$ approximation).
+
+- `LCDMnu_dec_toDR.ini`. This file contains information of the relevant parameters for neutrino decays entirely into DR, assuming three 
+degenerate neutrino states. 
+
+- `LCDM.ini` and `LCDMnu.ini`. These files contain information of the relevant parameters for standard $\Lambda$CDM in the presence of 
+massless and massive neutrinos, respectively. The second file allows to compute the stable limit of scenarios A1-A3, B1-B2 in 
+`LCDMnu_dec_toNCDM.ini`, i.e. those with the same neutrino mass spectrum but in the absence of decays.
+
+The folder `CNB_calculations` contains files that allow to reproduce the plots in the preprint 2510.XXXXX. In addition, the file 
+`LCDMnu_negative.ini` contains information on how to specify negative neutrino masses (only relevant for stable 
+neutrinos if one wants to quantify the tension with oscillation data).
 
 Any questions or comments may be directed to g.francoabellan@gmail.com or nicola.terzaghi@gmail.com.
 

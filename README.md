@@ -17,13 +17,14 @@ lighter neutrinos. These scenarios (labeled A1-A3, B1-B2) are classified accordi
 - `LCDMnu_dec_toDR.ini`. This file contains information of the relevant parameters for neutrino decays entirely into DR, assuming three 
 degenerate neutrino states. 
 
-- `LCDM.ini` and `LCDMnu.ini`. These files contain information of the relevant parameters for standard $\Lambda$CDM in the presence of 
+- `LCDM.ini` and `LCDMnu.ini`. These files contain information of the relevant parameters for standard LCDM in the presence of 
 massless and massive neutrinos, respectively. The second file allows to compute the stable limit of scenarios A1-A3, B1-B2 in 
 `LCDMnu_dec_toNCDM.ini`, i.e. those with the same neutrino mass spectrum but in the absence of decays.
 
-The folder `CNB_calculations` contains files that allow to reproduce the plots in the preprint 2510.XXXXX. In addition, the file 
-`LCDMnu_negative.ini` contains information on how to specify negative neutrino masses (only relevant for stable 
-neutrinos if one wants to quantify the tension with oscillation data).
+The folder `CNB_calculations` contains Jupyter notebooks and auxiliary files that allow to reproduce the plots in the preprint 2510.XXXXX. In 
+addition, the notebook `plot_PSD_evolution.ipynb' allows to generate a gif showing the evolution for the phase-space distribution of the 
+parent and daughter neutrinos. Finally, the file `LCDMnu_negative.ini` contains information on how to specify negative neutrino masses (only 
+relevant for stable neutrinos if one wants to quantify the tension between cosmological and oscillation data).
 
 Any questions or comments may be directed to g.francoabellan@gmail.com or nicola.terzaghi@gmail.com.
 

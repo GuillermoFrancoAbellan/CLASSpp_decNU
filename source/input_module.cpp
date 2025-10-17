@@ -1333,7 +1333,8 @@ int InputModule::input_read_parameters() {
 
  }
 
-  if ((pba->has_negative_nu_mass == _TRUE_) && (sgn(pba->Mnu_tot) == -1)) { //GFA, this ensures N_ur is roughly 3.042 for negative neutrino masses
+  if ((pba->has_negative_nu_mass == _TRUE_) && (sgn(pba->Mnu_tot) == -1)) {
+    //GFA, this ensures N_ur is roughly 3.042 for negative neutrino masses
     pba->Omega0_ur = (0.00641+2.0*3.04112)*7./8.*pow(4./11.,4./3.)*pba->Omega0_g;
   }
   Omega_tot += pba->Omega0_ur;

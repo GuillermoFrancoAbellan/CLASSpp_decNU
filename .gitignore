@@ -5,6 +5,7 @@ class
 *.prof
 libclass.a
 *out
+*.ini
 python/classy.c
 *.pyc
 python/build/

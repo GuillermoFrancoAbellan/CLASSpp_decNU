@@ -754,8 +754,8 @@ int BackgroundModule::background_init() {
     double T0_nu = 0.71611; //equal to T_ncdm_default_
     double H_at_znr = pba->H0*sqrt(pba->Omega0_cdm+pba->Omega0_b)*pow(mass_parent_eV/(3.0*T0_nu*pba->T_cmb*_k_B_/_eV_),3./2.);
     if ((pba->has_ncdm_decay_dr_ncdm == _TRUE_) && (pba->is_ncdm_decay_degenerate == _TRUE_) && (pba->nu_hierarchy == normal)) {
-      // Notice that in scenario B1, lifetimes is computed as 1/(2*Gamma), to account for the two decay modes of the parent neutrino
-      H_at_znr *= (1./2.);
+      H_at_znr *= (1./2.);   // Notice that in scenario B1, lifetimes is computed as 1/(2*Gamma), to account for the two decay modes of the parent neutrino
+
     }
     class_test(Gamma_nu > H_at_znr,
                error_message_,

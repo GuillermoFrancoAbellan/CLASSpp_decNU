@@ -2904,6 +2904,7 @@ int PerturbationsModule::perturb_prepare_k_output() {
                fflush(stdout);
              }
            }
+          if (_FALSE_) { // Old q-dependent Theta_n_q_l column titles, kept for reference
           // GFA, rather printing Theta_n_q_l for all evolved q-bins (q_size_ncdm_), we print only a subset 15 q-bins in the range [0,ncdm_qmax_]
           // This is a dirty solution to avoid memory errors that arise when asking to print Theta_n_q_l for more than 15 q-bins
           int Nq, Nq_L, Nq_H;
@@ -2949,6 +2950,13 @@ int PerturbationsModule::perturb_prepare_k_output() {
                 class_store_columntitle(scalar_titles_,tmp,_TRUE_);
               }
             }
+          } // end if (_FALSE_) - old Theta_n_q_l column titles
+
+            //NT
+            for (index_l=0; index_l<=ppr->l_max_ncdm; index_l++) {
+                sprintf(tmp, "Theta_new_n_l[%d][%d]", idx_n, index_l);
+                class_store_columntitle(scalar_titles_, tmp, _TRUE_);
+              }
 
       }
       /* Decaying cold dark matter */
@@ -7828,6 +7836,7 @@ int PerturbationsModule::perturb_print_variables_member(double tau, double* y, d
       }
       /* Include ncdm Theta_n_q_l_ncdm[n,q,l] in perturbation output */
       int idx_n = pba->index_ncdm_to_print; // GFA
+      if (_FALSE_) { // Old q-dependent Theta_n_q_l output, kept for reference
       if (ppw->approx[ppw->index_ap_ncdmfa] == (int)ncdmfa_on) {
 
           for (index_q=0; index_q<ppw->pv->q_size_ncdm[idx_n]; index_q++) {
@@ -7882,6 +7891,34 @@ int PerturbationsModule::perturb_print_variables_member(double tau, double* y, d
             }
           }
         }
+      } // end if (_FALSE_) - old Theta_n_q_l output
+          //NT - compute q-averaged temperature multipoles (eq. 2.32) for any NCDM species
+          {
+            int q_size_loc = ppw->pv->q_size_ncdm[idx_n];
+            for (index_l=0; index_l<=ppw->pv->l_max_ncdm[idx_n]; index_l++) {
+              double integral_num = 0.;
+              double integral_denom = 0.;
+              for(int iq=0; iq < q_size_loc; iq++) {
+                double q_loc = ncdm_->q_ncdm_[idx_n][iq];
+                const int idx_loc = ppw->pv->index_ncdm_[idx_n][iq];
+                double weight; // = q^2 * f * dq
+                switch (ncdm_->ncdm_types_[idx_n]) {
+                  case NCDMType::standard:
+                    // w_ncdm_ already stores f0 * dq (quadrature weight)
+                    weight = q_loc*q_loc * ncdm_->w_ncdm_[idx_n][iq];
+                    break;
+                  case NCDMType::decay_dr: {
+                    const auto& dncdm_loc = ncdm_->decay_dr_map_[idx_n];
+                    weight = q_loc*q_loc * exp(pvecback[background_module_->index_bg_lnf_ncdm_decay_dr1_ + dncdm_loc.q_offset + iq]) * dncdm_loc.dq[iq];
+                    break;
+                  }
+                }
+                integral_num += weight * y[idx_loc+index_l];
+                integral_denom += weight;
+              }
+              class_store_double(dataptr, integral_num/(3*integral_denom), _TRUE_, storeidx);
+            }
+          } //NT
 
     }
 

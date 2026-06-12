@@ -30,9 +30,75 @@ print("ns =",ns)
 print("lmax =",l_max)
 print("k_output_values =",number_string)
 print("")
-print("Quantities interpolated over momenta will be evaluated on Nq_interp = %d bins"%Nq_interp)
+#print("Quantities interpolated over momenta will be evaluated on Nq_interp = %d bins"%Nq_interp)
 
-def read_files(file_path, perturb_base_path, q_ratio, q_ratio2, decay = True):
+
+
+def compute_power_spectrum_new(delta_new): #Computes power spectrum for Delta_ell that are already q-averaged //NT
+    
+    Cl_new1 = []
+    for l in range(1, l_max + 1):
+        integral_value = 0.0
+        for k in range(len(lnk_values) - 1):
+            d_lnk = lnk_values[k + 1] - lnk_values[k]
+            delta_squared_midpoint = 0.5 * ( ((k_values[k]/k_pivot)**(ns-1))*delta_new[k][l]**2 + ((k_values[k+1]/k_pivot)**(ns-1))*delta_new[k + 1][l]**2 )
+            integral_value += delta_squared_midpoint * d_lnk
+        Cl_new1.append(T_nu**2 * (4*np.pi) * As * integral_value)
+
+    # Add monopole term as 0 and shift values
+    Cl_new1 = np.concatenate((Cl_new1, [0]))
+    Cl_new1 = np.roll(Cl_new1, 1)
+
+    return Cl_new1
+
+
+def generate_poisson_fluctuations(Cl_avg0, delta_map, n_trials, N_total):
+    """
+    Generate Poisson-fluctuated sky maps and compute their angular power spectra.
+
+    Parameters:
+        Cl_avg0 (np.ndarray): Theoretical Cℓ spectrum (including monopole and dipole).
+        delta_map (np.ndarray): Input fractional fluctuation map (δT/T).
+        n_trials (int): Number of Monte Carlo realizations.
+        N_total (int): Total number of neutrino capture events.
+
+    Returns:
+        maps_fluc_unscaled (np.ndarray): 2D array of unscaled fluctuated maps (δT/T).
+        cls_fluc (np.ndarray): Array of angular power spectra per trial.
+        ratios_fluc (list): List of Cℓ / Cℓ_theory ratios for each trial (ℓ > 0).
+    """
+    n_pixels = len(delta_map)
+    lmax = len(Cl_avg0) - 1
+    ls = np.arange(1, lmax + 1)  # Exclude monopole (ℓ=0)
+
+    # Add monopole and convert to expected counts
+    map_wmono = N_total * (delta_map + 1.95)
+
+    # Allocate arrays
+    maps_fluc_scaled = np.empty((n_trials, n_pixels), dtype=np.float64)
+    maps_fluc_unscaled = np.empty((n_trials, n_pixels), dtype=np.float64)
+    cls_fluc = []
+    ratios_fluc = []
+
+    rng = np.random.default_rng(seed=5)
+    # Generate Poisson samples and compute Cℓs
+    for i in range(n_trials):
+        sampled_map = rng.poisson(map_wmono)
+        maps_fluc_scaled[i] = sampled_map
+        maps_fluc_unscaled[i] = (sampled_map / N_total - 1.95)
+
+    for m in maps_fluc_unscaled:
+        cl = hp.anafast(m, lmax=lmax)
+        cls_fluc.append(cl[ls])
+        ratios_fluc.append(cl[ls] / Cl_avg0[1:])
+
+    return maps_fluc_scaled, maps_fluc_unscaled, np.array(cls_fluc), np.array(ratios_fluc)
+
+
+##### OLD FUNCTIONS #################################################
+
+
+def read_files(file_path, perturb_base_path, q_ratio, q_ratio2, is_ncdm_decay_degenerate, decay = True):
 
     """
     Reads background/perturbation files from CLASS to get the neutrino PSD and the neutrino temperature multipoles (defined as in eq. 2.4 of https://arxiv.org/abs/2103.01274)
@@ -92,6 +158,7 @@ def read_files(file_path, perturb_base_path, q_ratio, q_ratio2, decay = True):
 
     # Initialize lists to store perturbations
     delta = [[[None for _ in range(l_max + 1)] for _ in range(n_kmodes)] for _ in range(q_size2)]
+    delta_new = [[None for _ in range(l_max + 1)] for _ in range(n_kmodes)] #NT
 
     # Prepare f using background data
     if decay == True:
@@ -128,10 +195,18 @@ def read_files(file_path, perturb_base_path, q_ratio, q_ratio2, decay = True):
             delta_q_int_k_l = interp_func(q_int)
             delta_interpolated[:, k, l] = delta_q_int_k_l
 
+    # Retrieves values for delta_new (no q dependence) //NT
+    for k in range(n_kmodes):
+        for l in range(l_max + 1):
+            if is_ncdm_decay_degenerate == "yes":
+                delta_new[k][l] = all_columns_list[k][25 + (l_max + 1)*q_size2 + l]
+            else:
+                delta_new[k][l] = all_columns_list[k][29 + (l_max + 1)*q_size2 + l]
+
     if decay == True:
-        return f, delta_interpolated, q_int
+        return f, delta_interpolated, q_int, delta_new
     else:
-        return delta_interpolated, q_int
+        return delta_interpolated, q_int, delta_new
 
 
 
@@ -251,44 +326,3 @@ def compute_avg_hannestad(f, Cl, m_eV,q_int):
     return Cl_avg_test
 
 
-def generate_poisson_fluctuations(Cl_avg0, delta_map, n_trials, N_total):
-    """
-    Generate Poisson-fluctuated sky maps and compute their angular power spectra.
-
-    Parameters:
-        Cl_avg0 (np.ndarray): Theoretical Cℓ spectrum (including monopole and dipole).
-        delta_map (np.ndarray): Input fractional fluctuation map (δT/T).
-        n_trials (int): Number of Monte Carlo realizations.
-        N_total (int): Total number of neutrino capture events.
-
-    Returns:
-        maps_fluc_unscaled (np.ndarray): 2D array of unscaled fluctuated maps (δT/T).
-        cls_fluc (np.ndarray): Array of angular power spectra per trial.
-        ratios_fluc (list): List of Cℓ / Cℓ_theory ratios for each trial (ℓ > 0).
-    """
-    n_pixels = len(delta_map)
-    lmax = len(Cl_avg0) - 1
-    ls = np.arange(1, lmax + 1)  # Exclude monopole (ℓ=0)
-
-    # Add monopole and convert to expected counts
-    map_wmono = N_total * (delta_map + 1.95)
-
-    # Allocate arrays
-    maps_fluc_scaled = np.empty((n_trials, n_pixels), dtype=np.float64)
-    maps_fluc_unscaled = np.empty((n_trials, n_pixels), dtype=np.float64)
-    cls_fluc = []
-    ratios_fluc = []
-
-    rng = np.random.default_rng(seed=5)
-    # Generate Poisson samples and compute Cℓs
-    for i in range(n_trials):
-        sampled_map = rng.poisson(map_wmono)
-        maps_fluc_scaled[i] = sampled_map
-        maps_fluc_unscaled[i] = (sampled_map / N_total - 1.95)
-
-    for m in maps_fluc_unscaled:
-        cl = hp.anafast(m, lmax=lmax)
-        cls_fluc.append(cl[ls])
-        ratios_fluc.append(cl[ls] / Cl_avg0[1:])
-
-    return maps_fluc_scaled, maps_fluc_unscaled, np.array(cls_fluc), np.array(ratios_fluc)
